@@ -36,8 +36,6 @@ jsonschema==4.17.3
 kiwisolver==1.4.4
 Levenshtein==0.20.9
 MarkupSafe==2.1.1
-matplotlib==3.6.2
-matplotlib-inline==0.1.6
 numpy==1.23.5
 opencv-python==4.6.0.66
 openpyxl==3.0.10
