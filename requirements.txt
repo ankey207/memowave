@@ -53,7 +53,7 @@ pure-eval==0.2.2
 pyarrow==10.0.1
 pydeck==0.8.0
 Pygments==2.13.0
-pylibtiff==0.5.1
+pylibtiff==0.4.4
 Pympler==1.0.1
 pyparsing==3.0.9
 pyrsistent==0.19.2
