@@ -16,9 +16,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 # Page setting
 st.set_page_config(page_title="MemoWAVE", page_icon="favicon.png", layout="centered", initial_sidebar_state="auto", menu_items=None)
-
-st.markdown(no_sidebar_style, unsafe_allow_html=True)
-
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
