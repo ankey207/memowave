@@ -1,5 +1,3 @@
-
-
 import streamlit as st
 import pytesseract
 import cv2
@@ -16,6 +14,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 # Page setting
 st.set_page_config(page_title="MemoWAVE", page_icon="favicon.png", layout="centered", initial_sidebar_state="auto", menu_items=None)
+
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
@@ -77,13 +76,14 @@ def remove_montant_from_list(liste:list):
         new_liste.remove(element)
     return [new_liste, liste_montant]
 
+
 def delete_last_element(liste1, liste2, liste3):
-    taille_max = max(len(liste1), len(liste2), len(liste3))
-    if taille_max == len(liste1):
+    taille_min = min(len(liste1), len(liste2), len(liste3))
+    while len(liste1) > taille_min:
         liste1.pop()
-    if taille_max == len(liste2):
+    while len(liste2) > taille_min:
         liste2.pop()
-    if taille_max == len(liste3):
+    while len(liste3) > taille_min:
         liste3.pop()
 
 
@@ -115,6 +115,11 @@ def delete_intrus_in_date_english(var:list):
     for elment in var:
         if len(elment.split()) == 1:
             elements_to_remove.append(elment)
+
+        elif len(elment.split()) == 2:
+            if right_month(elment.split()[1])=='None':
+                elements_to_remove.append(elment)
+
         else:
             if right_month(elment.split()[1])=='None':
                 elements_to_remove.append(elment)
@@ -248,6 +253,10 @@ def corriger_montant(chaine):
     for i in range(len(chaine)):
         chaine = chaine.replace(".", "")
         chaine = chaine.replace("F", "")
+        chaine = chaine.replace(",", "")
+        chaine = chaine.replace(":", "")
+        chaine = chaine.replace("!", "")
+        chaine = chaine.replace("?", "")
 
     for i in range(len(chaine)):
         if chaine[i] in correspondance:
@@ -260,17 +269,23 @@ def corriger_montant(chaine):
         return chaine
 
 def get_language(prenom:list,date:list):
+    fra = 0
+    eng = 0
     for i in range(len(prenom)):
         x = prenom[i]
         y = date[i]
         if 'Withdrawal' in x or 'Received' in x or 'Sent' in x or 'Deposit' in x or 'Paid' in x:
             if 'Jan ' in y or 'Feb ' in y or 'Mar ' in y or 'Apr ' in y or 'Jun ' in y or 'Jul ' in y or 'Aug ' in y or 'Sep ' in y or 'Nov ' in y or 'Dec ' in y:
-                return 'fra'
+                 fra +=1
             else:
-                return 'eng'
-
+                eng +=1
         else:
-            return 'fra'
+            fra +=1
+    if eng != 0:
+        return 'eng'
+    else:
+        return 'fra'
+
 
 def corriger_prenom_english(chaine:list):
     chaine = chaine.replace("to ", "")
@@ -343,9 +358,18 @@ try:
 
             #recuperation de la liste des monatnt
             lISTE_MONTANT = lISTE[1]
+            st.write(LISTE_PRENOMS_NUM)
+            st.write(lISTE_DATE)
+            st.write(lISTE_MONTANT)
+
+            st.write("*********************************")
 
             #un peu d'appurement des liste supprimer les residus
             delete_last_element(LISTE_PRENOMS_NUM,lISTE_DATE,lISTE_MONTANT)
+            st.write(LISTE_PRENOMS_NUM)
+            st.write(lISTE_DATE)
+            st.write(lISTE_MONTANT)
+
 
             #on recupere le nombre de lignes dans chaque images
             NOMBRE_LIGNE_IMAGE.append(len(LISTE_PRENOMS_NUM))
@@ -367,7 +391,6 @@ try:
         data['DATE'] = data['DATE1']
         lang = get_language(PRENOMS_NUM,DATE)
         if lang == 'eng':
-            st.write(lang)
             data['DATE'] = data['DATE1'].apply(get_date_english)
         if lang == 'fra':
             data['DATE'] = data['DATE1'].apply(get_date)
