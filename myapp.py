@@ -13,7 +13,7 @@ import time
 import plotly.express as px
 import plotly.graph_objects as go
 # Page setting
-st.set_page_config(page_title="MemoWAVE", page_icon="favicon.png", layout="centered", initial_sidebar_state="auto", menu_items=None)
+st.set_page_config(page_title="MemoWAVE", page_icon="favicon.png", layout="wide", initial_sidebar_state="auto", menu_items=None)
 
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
@@ -358,18 +358,9 @@ try:
 
             #recuperation de la liste des monatnt
             lISTE_MONTANT = lISTE[1]
-            st.write(LISTE_PRENOMS_NUM)
-            st.write(lISTE_DATE)
-            st.write(lISTE_MONTANT)
-
-            st.write("*********************************")
 
             #un peu d'appurement des liste supprimer les residus
             delete_last_element(LISTE_PRENOMS_NUM,lISTE_DATE,lISTE_MONTANT)
-            st.write(LISTE_PRENOMS_NUM)
-            st.write(lISTE_DATE)
-            st.write(lISTE_MONTANT)
-
 
             #on recupere le nombre de lignes dans chaque images
             NOMBRE_LIGNE_IMAGE.append(len(LISTE_PRENOMS_NUM))
@@ -428,8 +419,9 @@ try:
         
         #st.write(":blue[statistiques pour la période du ]"+str(period_min))
         #st.success('This is a success message!', icon="✅")
-        st.info("Ce site vous permet de visualiser des statistiques de vos transactions WAVE en utilisant des captures d'écran.", icon="ℹ️")
-        st.warning("Les images ne doivent comporter aucun élément extérieur à l'application WAVE, sous peine de voir certaines informations ne pas être prises en compte. ", icon="⚠️")
+        if len(data)==0:
+            st.info("Ce site vous permet de visualiser des statistiques de vos transactions WAVE en utilisant des captures d'écran.", icon="ℹ️")
+            st.warning("Les images ne doivent comporter aucun élément extérieur à l'application WAVE, sous peine de voir certaines informations ne pas être prises en compte. ", icon="⚠️")
         if len(data) != 0:
             st.markdown(f"<h4 style='color: #0068c9;text-align: center; background-color: #eeeeee';text-shadow: 2px 2px;>MemoWAVE pour la période du {period_min} au {period_max} </h4>", unsafe_allow_html=True)
             st.markdown("")
