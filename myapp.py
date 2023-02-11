@@ -443,8 +443,8 @@ try:
             DATE += lISTE_DATE
             MONTANT += lISTE_MONTANT
             NUMEROS += lISTE_NUMEROS
-
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
+
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
         data['TRANSACTION'] = data['PRENOMS'].apply(get_TRANSACTION)
         data['PRENOMS'] = data['TEXT'].apply(get_name)
@@ -462,6 +462,7 @@ try:
 
         #consolidation1 de la base finale
         data = data[['PRENOMS','TRANSACTION','DATE','MONTANT','NUMEROS']]
+
         #data['DATE1'] = pd.to_datetime(data.loc[:,'DATE'], format='%Y-%m-%d')
         #data = data.sort_values(by='DATE1',ascending=False)
         #data = data[['PRENOMS','TRANSACTION','DATE','MONTANT']]
@@ -574,9 +575,9 @@ try:
                    key='download-csv'
                 )
             #integralité des transactions WAVE
-            df=data
+            #df=data
             if len(histo)!=0:
-                st.dataframe(df, width=None, height=None)
+                st.dataframe(data, width=None, height=None)
 
 
         # diagramme en baton top 5 des depots
@@ -590,7 +591,7 @@ try:
             fig_bar_transfert = px.bar(pie_depot, y='MONTANT', x='PRENOMS', text_auto='.2s',title="TOP5 Donateurs ")
             fig_bar_transfert.update_traces(hovertemplate='<b>Prénoms : </b> %{x} <br>' + '<b>Montant Total : </b> %{y} CFA')
 
-            fig_bar_transfert.update_traces(texttemplate='%{y} ',textfont_size=16, textangle=0, textposition="inside", cliponaxis=False)
+            fig_bar_transfert.update_traces(texttemplate='%{y} CFA',textfont_size=16, textangle=0, textposition="inside", cliponaxis=False)
             fig_bar_transfert.update_layout(paper_bgcolor="rgb( 238, 238, 238)",margin = {'l': 0, 'r': 50, 't': 50, 'b': 0})
             st.plotly_chart(fig_bar_transfert, theme="streamlit", use_container_width=True)
 except:
@@ -627,6 +628,8 @@ except:
             lISTE = remove_error2(lISTE, keywords)
             lISTE = remove_prenoms_from_list(lISTE)
             LISTE_PRENOMS_NUM = lISTE[1]
+            lISTE_NUMEROS = get_all_numbers(LISTE_PRENOMS_NUM)
+
             #la liste sans les prenoms et les numeros
             lISTE = lISTE[0]
 
@@ -656,7 +659,8 @@ except:
             PRENOMS_NUM += LISTE_PRENOMS_NUM
             DATE += lISTE_DATE
             MONTANT += lISTE_MONTANT
-        data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT)), columns=['TEXT', 'DATE1', 'MONATANT1'])
+            NUMEROS += lISTE_NUMEROS
+        data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
         data['TRANSACTION'] = data['PRENOMS'].apply(get_TRANSACTION)
         data['PRENOMS'] = data['TEXT'].apply(get_name)
@@ -674,10 +678,10 @@ except:
 
 
         #consolidation1 de la base finale
-        data = data[['PRENOMS','TRANSACTION','DATE','MONTANT']]
+        #data = data[['PRENOMS','TRANSACTION','DATE','MONTANT']]
         #data['DATE1'] = pd.to_datetime(data.loc[:,'DATE'], format='%Y-%m-%d')
         #data = data.sort_values(by='DATE1',ascending=False)
-        data = data[['PRENOMS','TRANSACTION','DATE','MONTANT']]
+        data = data[['PRENOMS','TRANSACTION','DATE','MONTANT','NUMEROS']]
 
         # Calculer la somme des montants de retrait
         data_retraits = data.loc[data['TRANSACTION'] == 'Retrait']

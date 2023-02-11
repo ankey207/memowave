@@ -377,231 +377,6 @@ try:
         MONTANT=[]
         NUMEROS = []
         NOMBRE_LIGNE_IMAGE = []
-        config = r'--psm 1'
-
-
-        config_11 = r'--psm 11'
-
-
-        for file in uploaded_files:
-            lISTE=[]
-            lISTE_11 = []
-            img_cv = Image.open(file)
-            img_cv = img_cv.save("img.jpg")
-            img_cv1 = cv2.imread("img.jpg")
-            texte = pytesseract.image_to_string(img_cv1,config=config)
-            texte_11 = pytesseract.image_to_string(img_cv1,config=config_11)
-
-            texte = remove_accents(texte)
-            texte = texte.strip()
-            
-
-            with open("text.txt", "w") as file1:
-              file1.write(texte)
-
-            with open("text.txt", "r") as f:
-                for line in f:
-                    lISTE.append(line.strip())
-
-
-            def delete_empty_value(var):
-                return [x for x in var if x]
-
-            lISTE =delete_empty_value(lISTE)
-
-            keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
-            lISTE = remove_error2(lISTE, keywords)
-            
-
-            lISTE = remove_prenoms_from_list(lISTE)
-            LISTE_PRENOMS_NUMs = lISTE[1]
-            LISTE_PRENOMS_NUM = extract_characters_before_first_digit(LISTE_PRENOMS_NUMs)
-            lISTE_NUMEROS = get_all_numbers(LISTE_PRENOMS_NUMs)
-            lISTE_MONTANT = get_all_montant(LISTE_PRENOMS_NUMs)
-            
-
-            #la liste avec uniquement les date et premeir traitrement des dates
-            lISTE_DATE = lISTE[0]
-            lISTE_DATE = delete_coma(lISTE_DATE)
-
-            lang = get_language(LISTE_PRENOMS_NUM,lISTE_DATE)            
-            if lang == 'eng':
-                lISTE_DATE = delete_intrus_in_date_english(lISTE_DATE)
-            if lang == 'fra':
-                lISTE_DATE = delete_intrus_in_date(lISTE_DATE)
-
-            #recuperation de la liste des monatnt
-
-            #un peu d'appurement des liste supprimer les residus
-            delete_last_element(LISTE_PRENOMS_NUM,lISTE_DATE,lISTE_MONTANT,lISTE_NUMEROS)
-
-
-            #on recupere le nombre de lignes dans chaque images
-            NOMBRE_LIGNE_IMAGE.append(len(LISTE_PRENOMS_NUM))
-            
-            #conception de liste unique pour tous les images selectionnées
-            PRENOMS_NUM += LISTE_PRENOMS_NUM
-            DATE += lISTE_DATE
-            MONTANT += lISTE_MONTANT
-            NUMEROS += lISTE_NUMEROS
-
-        data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
-        data.to_excel('datos.xlsx', index=False)
-        data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
-        data['TRANSACTION'] = data['PRENOMS'].apply(get_TRANSACTION)
-        data['PRENOMS'] = data['TEXT'].apply(get_name)
-        data['PRENOMS'] = data['PRENOMS'].apply(corriger_prenom_english)
-        data['MONTANT'] = data['MONATANT1'].apply(corriger_montant)
-        
-        data['DATE'] = data['DATE1']
-        lang = get_language(PRENOMS_NUM,DATE)
-        if lang == 'eng':
-            data['DATE'] = data['DATE1'].apply(get_date_english)
-        if lang == 'fra':
-            data['DATE'] = data['DATE1'].apply(get_date)
-
-        data = data.loc[data['DATE'] != 'error']
-
-        #consolidation1 de la base finale
-        data = data[['PRENOMS','TRANSACTION','DATE','MONTANT','NUMEROS']]
-        #data['DATE1'] = pd.to_datetime(data.loc[:,'DATE'], format='%Y-%m-%d')
-        #data = data.sort_values(by='DATE1',ascending=False)
-        #data = data[['PRENOMS','TRANSACTION','DATE','MONTANT']]
-
-        # Calculer la somme des montants de retrait
-        data_retraits = data.loc[data['TRANSACTION'] == 'Retrait']
-        somme_des_retraits = data_retraits['MONTANT'].sum()
-
-        # Calculer la somme des montants de depot
-        data_depot = data.loc[data['TRANSACTION'] == 'Depot']
-        somme_des_depots = data_depot['MONTANT'].sum()
-
-        # Calculer la somme des montants des paiement en ligne
-        data_paiement = data.loc[data['TRANSACTION'] == 'Paiement']
-        somme_des_paiements = data_paiement['MONTANT'].sum()
-
-        # Calculer la somme des montants transféré
-        data_transfert = data.loc[data['TRANSACTION'] == 'Transfert']
-        somme_Transfert = data_transfert['MONTANT'].sum()
-
-        # la data des depenses
-        data_depenses = data.loc[data['TRANSACTION'] != 'Depot']
-
-        # intervalle des temps des transactions
-        period_min = data['DATE'].min()
-        period_max = data['DATE'].max()
-
-        #ligne momo wave
-        
-        #st.write(":blue[statistiques pour la période du ]"+str(period_min))
-        #st.success('This is a success message!', icon="✅")
-        if len(data)==0:
-            st.info("Ce site vous permet de visualiser des statistiques de vos transactions WAVE en utilisant des captures d'écran.", icon="ℹ️")
-            st.warning("Les images ne doivent comporter aucun élément extérieur à l'application WAVE, sous peine de voir certaines informations ne pas être prises en compte. ", icon="⚠️")
-        if len(data) != 0:
-            st.markdown(f"<h4 style='color: #0068c9;text-align: center; background-color: #eeeeee';text-shadow: 2px 2px;>MemoWAVE pour la période du {period_min} au {period_max} </h4>", unsafe_allow_html=True)
-            st.markdown("")
-            
-        # Ligne A
-        
-        if len(data)!=0:
-            a1, a2, a3 = st.columns(3,gap="small")
-            a1.metric(":blue[Montant Total rétiré:]", "{:,.0f} CFA".format(somme_des_retraits))
-            a2.metric(":blue[Montant Total déposé:] ", "{:,.0f} CFA".format(somme_des_depots))
-            a3.metric(":blue[Montant Total transféré:] ", "{:,.0f} CFA".format(somme_Transfert))
-
-        # Ligne B
-        b1, b2 = st.columns(2)
-        with b1:
-            #courbe d'evolution des depenses sur le temps jour
-            courbe = data_depenses.groupby('DATE').sum(numeric_only=True)
-            if len(courbe)!=0:
-                courbe = pd.DataFrame(list(zip(courbe['MONTANT'],courbe['MONTANT'].index)), columns=['MONTANT','DATE' ])
-                courbe['DATE'] = pd.to_datetime(courbe.loc[:,'DATE'],format='%Y-%m-%d')
-                courbe = courbe.sort_values(by='DATE',ascending=True)
-                #st.write(courbe)
-                #courbe d'evolution
-                fig_courbe = px.line(courbe,x="DATE",y="MONTANT", title="Evolution des Dépenses sur le temps")
-                fig_courbe.update_traces(hovertemplate='<b>Date : </b> %{x} <br>' + '<b>Montant Total : </b> %{y} CFA')
-                fig_courbe.update_layout(paper_bgcolor="rgb( 238, 238, 238)",margin = {'l': 0, 'r': 50, 't': 50, 'b': 0})
-                st.plotly_chart(fig_courbe, theme="streamlit", use_container_width=True)
-
-        with b2:
-            # diagramme en baton top 5 des tranfert
-            bar_transfert = data_transfert.groupby('PRENOMS').sum(numeric_only=True)
-            if len(bar_transfert)!=0:
-                bar_transfert = pd.DataFrame(list(zip(bar_transfert['MONTANT'],bar_transfert['MONTANT'].index)), columns=['MONTANT','PRENOMS' ])
-                bar_transfert = bar_transfert.sort_values(by='MONTANT',ascending=False)
-                bar_transfert= bar_transfert[:5]
-                #st.write(bar_transfert)
-                #courbe d'evolution
-                fig_bar_transfert = px.bar(bar_transfert, y='MONTANT', x='PRENOMS', text_auto='.2s',title="TOP5 bénéficiaires de vos Transferts")
-                fig_bar_transfert.update_traces(hovertemplate='<b>Prénoms : </b> %{x} <br>' + '<b>Montant Total : </b> %{y} CFA')
-                fig_bar_transfert.update_traces(texttemplate='%{x} ',textfont_size=16, textangle=0, textposition="inside", cliponaxis=False)
-                fig_bar_transfert.update_layout(paper_bgcolor="rgb( 238, 238, 238)",margin = {'l': 0, 'r': 50, 't': 50, 'b': 0})
-                st.plotly_chart(fig_bar_transfert, theme="streamlit", use_container_width=True)
-
-        # Ligne C
-        c1, c2 = st.columns((12,5))
-
-        with c1:
-            #histogramme volume des depenses groupé par mois
-            histo = data_depenses.copy()
-            histo['DATE'] = pd.to_datetime(histo.loc[:,'DATE'], format='%Y-%m-%d')
-            histo['DATE'] = histo.loc[:,'DATE'].dt.strftime('%b %Y')
-            histo = histo.groupby('DATE').sum(numeric_only=True)
-            if len(histo)!=0:
-                histo = pd.DataFrame(list(zip(histo['MONTANT'],histo['MONTANT'].index)), columns=['MONTANT','DATE' ])
-                histo['DATE'] = pd.to_datetime(histo['DATE'])
-                histo = histo.sort_values(by='DATE',ascending=True)
-                #st.write(histo)
-                fig_histo = px.bar(histo, x="DATE",y="MONTANT", title=" Volume de vos Dépenses par mois")
-                fig_histo.update_traces(hovertemplate='<b>Date : </b> %{x} <br>' + '<b>Montant Total : </b> %{y} CFA')
-                fig_histo.update_traces(texttemplate='%{y} CFA', textposition='inside')
-                fig_histo.update_layout(paper_bgcolor="rgb( 238, 238, 238)",margin = {'l': 0, 'r': 50, 't': 50, 'b': 0})
-                st.plotly_chart(fig_histo, theme="streamlit", use_container_width=True)
-
-        with c2:   
-
-            @st.experimental_memo
-            def convert_df(data):
-               return data.to_csv(index=False).encode('utf-8')
-            csv = convert_df(data)
-            if len(histo)!=0:
-                st.download_button(
-                   "Télécharger les données en format CSV",
-                   csv,
-                   "file.csv",
-                   "text/csv",
-                   key='download-csv'
-                )
-            #integralité des transactions WAVE
-            df=data
-            if len(histo)!=0:
-                st.dataframe(df, width=None, height=None)
-
-
-        # diagramme en baton top 5 des depots
-        pie_depot = data_depot.groupby('PRENOMS').sum(numeric_only=True)
-        if len(pie_depot)!=0:
-            pie_depot = pd.DataFrame(list(zip(pie_depot['MONTANT'],pie_depot['MONTANT'].index)), columns=['MONTANT','PRENOMS' ])
-            pie_depot = pie_depot.sort_values(by='MONTANT',ascending=False)
-            pie_depot= pie_depot[:5]
-            #st.write(pie_depot)
-            #courbe d'evolution
-            fig_bar_transfert = px.bar(pie_depot, y='MONTANT', x='PRENOMS', text_auto='.2s',title="TOP5 Donateurs ")
-            fig_bar_transfert.update_traces(hovertemplate='<b>Prénoms : </b> %{x} <br>' + '<b>Montant Total : </b> %{y} CFA')
-
-            fig_bar_transfert.update_traces(texttemplate='%{y} ',textfont_size=16, textangle=0, textposition="inside", cliponaxis=False)
-            fig_bar_transfert.update_layout(paper_bgcolor="rgb( 238, 238, 238)",margin = {'l': 0, 'r': 50, 't': 50, 'b': 0})
-            st.plotly_chart(fig_bar_transfert, theme="streamlit", use_container_width=True)
-except:
-    try:
-        PRENOMS_NUM=[]
-        DATE=[]
-        MONTANT=[]
-        NUMEROS = []
-        NOMBRE_LIGNE_IMAGE = []
         config_11 = r'--psm 11'
 
         for file in uploaded_files:
@@ -627,17 +402,15 @@ except:
 
             keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
             lISTE = remove_error2(lISTE, keywords)
-
             lISTE = remove_prenoms_from_list(lISTE)
-
             LISTE_PRENOMS_NUM = lISTE[1]
+            lISTE_NUMEROS = get_all_numbers(LISTE_PRENOMS_NUM)
 
             #la liste sans les prenoms et les numeros
             lISTE = lISTE[0]
 
             #la liste avec uniquement les date et premeir traitrement des dates
             lISTE = remove_montant_from_list(lISTE)
-
             lISTE_DATE = lISTE[0]
             lISTE_DATE = delete_coma(lISTE_DATE)
 
@@ -661,7 +434,8 @@ except:
             PRENOMS_NUM += LISTE_PRENOMS_NUM
             DATE += lISTE_DATE
             MONTANT += lISTE_MONTANT
-        data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT)), columns=['TEXT', 'DATE1', 'MONATANT1'])
+            NUMEROS += lISTE_NUMEROS
+        data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
         data['TRANSACTION'] = data['PRENOMS'].apply(get_TRANSACTION)
         data['PRENOMS'] = data['TEXT'].apply(get_name)
@@ -679,10 +453,10 @@ except:
 
 
         #consolidation1 de la base finale
-        data = data[['PRENOMS','TRANSACTION','DATE','MONTANT']]
+        #data = data[['PRENOMS','TRANSACTION','DATE','MONTANT']]
         #data['DATE1'] = pd.to_datetime(data.loc[:,'DATE'], format='%Y-%m-%d')
         #data = data.sort_values(by='DATE1',ascending=False)
-        data = data[['PRENOMS','TRANSACTION','DATE','MONTANT']]
+        data = data[['PRENOMS','TRANSACTION','DATE','MONTANT','NUMEROS']]
 
         # Calculer la somme des montants de retrait
         data_retraits = data.loc[data['TRANSACTION'] == 'Retrait']
@@ -809,12 +583,12 @@ except:
             fig_bar_transfert = px.bar(pie_depot, y='MONTANT', x='PRENOMS', text_auto='.2s',title="TOP5 Donateurs ",height=400,)
             fig_bar_transfert.update_traces(hovertemplate='<b>Prénoms : </b> %{x} <br>' + '<b>Montant Total : </b> %{y} CFA')
 
-            fig_bar_transfert.update_traces(texttemplate='%{y} ',textfont_size=16, textangle=0, textposition="inside", cliponaxis=False)
+            fig_bar_transfert.update_traces(texttemplate='%{y} CFA',textfont_size=16, textangle=0, textposition="inside", cliponaxis=False)
             fig_bar_transfert.update_layout(paper_bgcolor="rgb( 238, 238, 238)",margin = {'l': 0, 'r': 50, 't': 50, 'b': 0})
             st.plotly_chart(fig_bar_transfert, theme="streamlit", use_container_width=True)
 
-    except:
-        st.warning("Il semble que l'une ou plusieurs de vos images ne sont pas conformes. S'il vous plaît, veuillez réessayer. ", icon="⚠️")
+except:
+    st.warning("Il semble que l'une ou plusieurs de vos images ne sont pas conformes. S'il vous plaît, veuillez réessayer. ", icon="⚠️")
 
 
 footer="""<style>
