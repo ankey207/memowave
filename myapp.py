@@ -445,7 +445,6 @@ try:
             NUMEROS += lISTE_NUMEROS
 
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
-        data.to_excel('datos.xlsx', index=False)
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
         data['TRANSACTION'] = data['PRENOMS'].apply(get_TRANSACTION)
         data['PRENOMS'] = data['TEXT'].apply(get_name)
