@@ -276,7 +276,9 @@ def corriger_montant(chaine):
         "I": "1",
         "G": "6",
         "H": "4",
-        "B": "3"
+        "H": "4",
+        "~": "-",
+        "_": "-"
     }
     # Parcours de la chaîne de caractères et remplacement des caractères incorrects
     for i in range(len(chaine)):
@@ -353,6 +355,17 @@ def get_all_montant(var:list):
         new_liste.append(word[-1])
     return new_liste
 
+def unsharp_mask(image, kernel_size=(5, 5), sigma=1.0, amount=1.0, threshold=0):
+    """Return a sharpened version of the image, using an unsharp mask."""
+    blurred = cv2.GaussianBlur(image, kernel_size, sigma)
+    sharpened = float(amount + 1) * image - float(amount) * blurred
+    sharpened = np.maximum(sharpened, np.zeros(sharpened.shape))
+    sharpened = np.minimum(sharpened, 255 * np.ones(sharpened.shape))
+    sharpened = sharpened.round().astype(np.uint8)
+    if threshold > 0:
+        low_contrast_mask = np.absolute(image - blurred) < threshold
+        np.copyto(sharpened, image, where=low_contrast_mask)
+    return sharpened
 
 #charger les images
 st.markdown("""
@@ -389,6 +402,7 @@ try:
             img_cv = Image.open(file)
             img_cv = img_cv.save("img.jpg")
             img_cv1 = cv2.imread("img.jpg")
+            img_cv1 = unsharp_mask(img_cv1)
             texte = pytesseract.image_to_string(img_cv1,config=config)
             texte_11 = pytesseract.image_to_string(img_cv1,config=config_11)
 
@@ -408,9 +422,9 @@ try:
                 return [x for x in var if x]
 
             lISTE =delete_empty_value(lISTE)
-
             keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
             lISTE = remove_error2(lISTE, keywords)
+
 
             lISTE = remove_prenoms_from_list(lISTE)
             LISTE_PRENOMS_NUMs = lISTE[1]
@@ -443,6 +457,7 @@ try:
             DATE += lISTE_DATE
             MONTANT += lISTE_MONTANT
             NUMEROS += lISTE_NUMEROS
+       
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
 
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
@@ -612,6 +627,7 @@ except:
             img_cv = Image.open(file)
             img_cv = img_cv.save("img.jpg")
             img_cv1 = cv2.imread("img.jpg")
+            img_cv1 = unsharp_mask(img_cv1)
             texte = pytesseract.image_to_string(img_cv1,config=config_11)
             texte = remove_accents(texte)
 
@@ -627,7 +643,6 @@ except:
                 return [x for x in var if x]
 
             lISTE =delete_empty_value(lISTE)
-
             keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
             lISTE = remove_error2(lISTE, keywords)
             lISTE = remove_prenoms_from_list(lISTE)
@@ -664,6 +679,7 @@ except:
             DATE += lISTE_DATE
             MONTANT += lISTE_MONTANT
             NUMEROS += lISTE_NUMEROS
+    
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
         data['TRANSACTION'] = data['PRENOMS'].apply(get_TRANSACTION)
