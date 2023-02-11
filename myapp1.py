@@ -132,7 +132,7 @@ def delete_intrus_in_date(var:list):
     new_var =  var
     elements_to_remove = []
     for elment in var:
-        if right_month(elment.split()[0])=='None'  or len(elment)<4:
+        if right_month(elment.split()[0])=='None' or len(elment)<4:
             elements_to_remove.append(elment)
     for elment in elements_to_remove:
         new_var.remove(elment)
@@ -411,6 +411,7 @@ try:
 
             keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
             lISTE = remove_error2(lISTE, keywords)
+            
 
             lISTE = remove_prenoms_from_list(lISTE)
             LISTE_PRENOMS_NUMs = lISTE[1]
@@ -626,13 +627,17 @@ except:
 
             keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
             lISTE = remove_error2(lISTE, keywords)
+
             lISTE = remove_prenoms_from_list(lISTE)
+
             LISTE_PRENOMS_NUM = lISTE[1]
+
             #la liste sans les prenoms et les numeros
             lISTE = lISTE[0]
 
             #la liste avec uniquement les date et premeir traitrement des dates
             lISTE = remove_montant_from_list(lISTE)
+
             lISTE_DATE = lISTE[0]
             lISTE_DATE = delete_coma(lISTE_DATE)
 
@@ -641,7 +646,6 @@ except:
                 lISTE_DATE = delete_intrus_in_date_english(lISTE_DATE)
             if lang == 'fra':
                 lISTE_DATE = delete_intrus_in_date(lISTE_DATE)
-
 
 
             #recuperation de la liste des monatnt
