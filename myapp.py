@@ -245,27 +245,29 @@ def get_date_english(var):
     text=var.split()
     month=right_month(text[1])
     day= text[0]
-
-    if len(text)==2:
-        year=datetime.now().year
-        #year=2022
-
-    if len(text)>2:
-        year=text[2]
-        if ':' in year:
-            year=datetime.now().year
-
-        if len(year)!=4:
-            year=datetime.now().year
-
-        if len(year) ==4 and (int(year) < 2018 or int(year) > datetime.now().year):
-            year=datetime.now().year
-
-    try:
-        date = datetime(int(year), true_month(month),int(day))
-        formatted_date = date.strftime("%Y-%m-%d")
-    except:
+    if len(str(day))>2:
         formatted_date = "error"
+    else:
+        if len(text)==2:
+            year=datetime.now().year
+            #year=2022
+
+        if len(text)>2:
+            year=text[2]
+            if ':' in year:
+                year=datetime.now().year
+
+            if len(year)!=4:
+                year=datetime.now().year
+
+            if len(year) ==4 and (int(year) < 2018 or int(year) > datetime.now().year):
+                year=datetime.now().year
+
+        try:
+            date = datetime(int(year), true_month(month),int(day))
+            formatted_date = date.strftime("%Y-%m-%d")
+        except:
+            formatted_date = "error"
 
     return formatted_date
 
