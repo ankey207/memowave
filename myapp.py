@@ -483,14 +483,15 @@ try:
         data['MONTANT'] = data['MONATANT1'].apply(corriger_montant)
         
         data['DATE'] = data['DATE1']
-        
+
         lang = get_language(PRENOMS_NUM,DATE)
         if lang == 'eng':
             data['DATE'] = data['DATE1'].apply(get_date_english)
         if lang == 'fra':
             data['DATE'] = data['DATE1'].apply(get_date)
-        data = data.loc[data['DATE'] != 'error']
         st.write(data['DATE'])
+        data = data.loc[data['DATE'] != 'error']
+
         #consolidation1 de la base finale
         data = data[['PRENOMS','TRANSACTION','DATE','MONTANT','NUMEROS']]
 
