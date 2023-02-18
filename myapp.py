@@ -47,7 +47,7 @@ def remove_error2(liste, keywords):
 
 def remove_error(text):
     indexs=[]
-    PRENOMSs=['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
+    PRENOMSs=['De','Depot','Depdt','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
     for fisrt_word in PRENOMSs:
         if fisrt_word in text:
             indexs.append(text.index(fisrt_word))
@@ -63,15 +63,14 @@ def delete_coma(var:list):
     return var
 
 
-        #ppp
+
 def remove_prenoms_from_list(liste:list):
     PRENOMS=['De','Depot','Depdt','Depet','A','Retrait','Paiement','Payé','Bonus','Transfert','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
     new_liste=liste
     liste_prenoms=[]
     elements_to_remove = []
     for elment in liste:
-        resultat = process.extractOne(elment.split()[0], PRENOMS)
-        if resultat[1] >= 90:
+        if elment.split()[0] in PRENOMS :
             elements_to_remove.append(elment)
             liste_prenoms.append(elment)
         else:
@@ -179,7 +178,7 @@ def get_TRANSACTION(word):
 
 def get_name(var):
     text=var.split()
-    if text[0] == 'Depot' or text[0] == 'Depet' or text[0] == 'Retrait' or text[0] == 'Withdrawal' or text[0] == 'Deposit':
+    if text[0] == 'Depot' or text[0] == 'Depet' or text[0] == 'Retrait' or text[0] == 'Withdrawal' or text[0] == 'Deposit' or text[0] == 'Depdt':
         return "Moi"
     elif text[0] == 'Bonus':
         return 'Bonus'
@@ -480,12 +479,6 @@ try:
             MONTANT += lISTE_MONTANT
             NUMEROS += lISTE_NUMEROS
 
-        st.write("1")
-        st.write(PRENOMS_NUM)
-        st.write(DATE)
-        st.write(MONTANT)
-        st.write(NUMEROS)
-
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
 
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
@@ -501,7 +494,6 @@ try:
             data['DATE'] = data['DATE1'].apply(get_date_english)
         if lang == 'fra':
             data['DATE'] = data['DATE1'].apply(get_date)
-        st.write(data['DATE'])
         data = data.loc[data['DATE'] != 'error']
 
         #consolidation1 de la base finale
@@ -710,12 +702,6 @@ except:
             MONTANT += lISTE_MONTANT
             NUMEROS += lISTE_NUMEROS
 
-        st.write("2")
-        st.write(PRENOMS_NUM)
-        st.write(DATE)
-        st.write(MONTANT)
-        st.write(NUMEROS)
-
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
         data['TRANSACTION'] = data['PRENOMS'].apply(get_TRANSACTION)
@@ -730,7 +716,6 @@ except:
         if lang == 'fra':
             data['DATE'] = data['DATE1'].apply(get_date)
 
-        st.write(data['DATE'])
         data = data.loc[data['DATE'] != 'error']
 
 
