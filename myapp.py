@@ -468,6 +468,11 @@ try:
             MONTANT += lISTE_MONTANT
             NUMEROS += lISTE_NUMEROS
 
+        st.write("1")
+        st.write(PRENOMS_NUM)
+        st.write(DATE)
+        st.write(MONTANT)
+        st.write(NUMEROS)
 
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
 
@@ -690,6 +695,13 @@ except:
             DATE += lISTE_DATE
             MONTANT += lISTE_MONTANT
             NUMEROS += lISTE_NUMEROS
+
+        st.write("2")
+        st.write(PRENOMS_NUM)
+        st.write(DATE)
+        st.write(MONTANT)
+        st.write(NUMEROS)
+
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
         data['TRANSACTION'] = data['PRENOMS'].apply(get_TRANSACTION)
