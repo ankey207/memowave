@@ -24,6 +24,8 @@ def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', input_str)
     return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
+
+
 #supprimer les differents texte avant les transactions
 def remove_error2(liste, keywords):
     # Trouver l'index de la première ligne qui contient l'un des mots clés
@@ -63,12 +65,13 @@ def delete_coma(var:list):
 
         #ppp
 def remove_prenoms_from_list(liste:list):
-    PRENOMS=['De','Depot','Depet','A','Retrait','Paiement','Payé','Bonus','Transfert','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
+    PRENOMS=['De','Depot','Depdt','Depet','A','Retrait','Paiement','Payé','Bonus','Transfert','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
     new_liste=liste
     liste_prenoms=[]
     elements_to_remove = []
     for elment in liste:
-        if elment.split()[0] in PRENOMS :
+        resultat = process.extractOne(elment.split()[0], PRENOMS)
+        if resultat[1] >= 90:
             elements_to_remove.append(elment)
             liste_prenoms.append(elment)
         else:
@@ -94,6 +97,16 @@ def remove_montant_from_list(liste:list):
         new_liste.remove(element)
     return [new_liste, liste_montant]
 
+#corriger de les mois des differentes dates
+def right_month(chaine):
+    MOIS = ['janv', 'fevr', 'mars', 'avr', 'mai', 'juin', 'juil', 'aout', 'sept', 'oct', 'nov', 'dec']
+    resultat = process.extractOne(chaine, MOIS)
+    if resultat[1] >= 75:
+        resultat = resultat[0]
+    else:
+        resultat = 'None'
+
+    return resultat
 
 def delete_last_element(liste1, liste2, liste3,liste4):
     taille_min = min(len(liste1), len(liste2), len(liste3))
@@ -115,19 +128,16 @@ def delete_last_element_11(liste1, liste2, liste3):
     while len(liste3) > taille_min:
         liste3.pop()
 
-
-#corriger de les mois des differentes dates
-def right_month(chaine):
-    MOIS = ['janv', 'fevr', 'mars', 'avr', 'mai', 'juin', 'juil', 'aout', 'sept', 'oct', 'nov', 'dec']
-    resultat = process.extractOne(chaine, MOIS)
-    if resultat[1] >= 50:
-        resultat = resultat[0]
-    else:
-        resultat = 'None'
-
-    return resultat
-
 #supprimer les numeros ou les autres elements qui ne doiebnt pas etre dans la liste de date
+def delete_intrus_in_date999(liste1, liste2, liste3,liste4):
+    for i in range(len(liste1)):
+        elment = liste1[i]
+        if right_month(elment.split()[0])=='None'  or len(elment)<4:
+            liste1.pop(i)
+            liste2.pop(i)
+            liste3.pop(i)
+            liste4.pop(i)
+
 def delete_intrus_in_date(var:list):
     new_var =  var
     elements_to_remove = []
@@ -435,7 +445,7 @@ try:
                 return [x for x in var if x]
 
             lISTE =delete_empty_value(lISTE)
-            keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
+            keywords = ['De','Depot','Depdt','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
             lISTE = remove_error2(lISTE, keywords)
 
             lISTE = remove_prenoms_from_list(lISTE)
@@ -663,7 +673,7 @@ except:
                 return [x for x in var if x]
 
             lISTE =delete_empty_value(lISTE)
-            keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
+            keywords = ['De','Depot','Depdt','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
             lISTE = remove_error2(lISTE, keywords)
             lISTE = remove_prenoms_from_list(lISTE)
             LISTE_PRENOMS_NUM = lISTE[1]

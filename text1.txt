@@ -1,74 +1,95 @@
+23:04
+
+@ 46" ai
+
+3.2955 =
+
 De Esther 05 75 78 44 65
-dec. 31, 2022
-
-A Esther 05 75 78 44 65
-dec. 30, 2022
-
-Depot
-dec. 28, 2022
-
-A Ma Princesse 07 88 49 02 01
-dec. 28, 2022
-
-De Ma Princesse 07 88 49 02 01
-dec. 27, 2022
-
-De Ma Princesse 07 88 49 02 01
-dec. 27, 2022
-
-A Daniel AD 07 78 99 05 23
-dec. 21, 2022
-
-A Ma Princesse 07 88 49 02 01
-dec. 18, 2022
-
-Retrait
-dec. 17, 2022
-
-De Ibecko 07 08 07 48 19
-dec. 16, 2022
-
-A Ibecko 07 08 07 48 19
-dec. 16, 2022
-
-De Kevin 07 67 83 65 29
-dec. 16, 2022
-
-Retrait
-dec. 12, 2022
-
-Retrait
-dec. 09, 2022
-
-De Joel AD 07 79 09 43 73
-dec. 08, 2022
 
 3.000F
 
+dec. 31, 2022
+
+A Esther 05 75 78 44 65
+
 -7.070F
+
+dec. 30, 2022
 
 7.000F
 
+Depot
+
+dec. 28, 2022
+
+A Ma Princesse 07 88 49 02 01
+
 -31.310F
+
+dec. 28, 2022
+
+De Ma Princesse 07 88 49 02 01
 
 20.000F
 
+dec. 27, 2022
+
+De Ma Princesse 07 88 49 02 01
+
 11.500F
+
+dec. 27, 2022
+
+A Daniel AD 07 78 99 05 23
 
 -705F
 
+dec. 21, 2022
+
+A Ma Princesse 07 88 49 02 01
+
 -105F
+
+dec. 18, 2022
+
+Retrait
 
 -30.000F
 
+dec. 17, 2022
+
+De Ibecko 07 08 07 48 19
+
 10.000F
+
+dec. 16, 2022
+
+A Ibecko 07 08 07 48 19
 
 -10.100F
 
+dec. 16, 2022
+
+De Kevin 07 67 83 65 29
+
 30.200F
 
--5.000F
+dec. 16, 2022
+
+Retrait
 
 -5.000F
+
+dec. 12, 2022
+
+Retrait
+
+-5.000F
+
+dec. 09, 2022
+
+De Joel AD 07 79 09 43 73
 
 10.000F
+
+dec. 08, 2022
