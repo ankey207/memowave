@@ -245,7 +245,7 @@ def get_date_english(var):
     text=var.split()
     month=right_month(text[1])
     day= text[0]
-    if len(str(day))>2:
+    if len(str(text[0]))>2:
         formatted_date = "error"
     else:
         if len(text)==2:
