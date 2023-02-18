@@ -232,10 +232,11 @@ def get_date(var):
 
             if len(str(year)) ==4 and (int(year) < 2018 or int(year) > datetime.now().year):
                 year=datetime.now().year
-
-        date = datetime(int(year), true_month(month),int(day))
-        formatted_date = date.strftime("%Y-%m-%d")
-
+        try:
+            date = datetime(int(year), true_month(month),int(day))
+            formatted_date = date.strftime("%Y-%m-%d")
+        except:
+            formatted_date = "error"
         return formatted_date
 
 
@@ -260,8 +261,11 @@ def get_date_english(var):
         if len(year) ==4 and (int(year) < 2018 or int(year) > datetime.now().year):
             year=datetime.now().year
 
-    date = datetime(int(year), true_month(month),int(day))
-    formatted_date = date.strftime("%Y-%m-%d")
+    try:
+        date = datetime(int(year), true_month(month),int(day))
+        formatted_date = date.strftime("%Y-%m-%d")
+    except:
+        formatted_date = "error"
 
     return formatted_date
 
@@ -432,7 +436,6 @@ try:
             keywords = ['De','Depot','Depet','A','Retrait','Paiement','Withdrawal','Received','Sent','Transfer','Deposit','Paid']
             lISTE = remove_error2(lISTE, keywords)
 
-
             lISTE = remove_prenoms_from_list(lISTE)
             LISTE_PRENOMS_NUMs = lISTE[1]
             LISTE_PRENOMS_NUM = extract_characters_before_first_digit(LISTE_PRENOMS_NUMs)
@@ -464,7 +467,8 @@ try:
             DATE += lISTE_DATE
             MONTANT += lISTE_MONTANT
             NUMEROS += lISTE_NUMEROS
-       
+
+
         data = pd.DataFrame(list(zip(PRENOMS_NUM, DATE, MONTANT,NUMEROS)), columns=['TEXT', 'DATE1', 'MONATANT1','NUMEROS'])
 
         data['PRENOMS'] = data['TEXT'].str.split(' ').str[0]
@@ -479,7 +483,6 @@ try:
             data['DATE'] = data['DATE1'].apply(get_date_english)
         if lang == 'fra':
             data['DATE'] = data['DATE1'].apply(get_date)
-
         data = data.loc[data['DATE'] != 'error']
 
         #consolidation1 de la base finale
@@ -525,7 +528,8 @@ try:
             
         # Ligne A
         
-        if len(data)!=0 and isinstance(somme_des_retraits, int) and isinstance(somme_des_depots, int) and isinstance(somme_Transfert, int):
+        #if len(data)!=0 and isinstance(somme_des_retraits, int) and isinstance(somme_des_depots, int) and isinstance(somme_Transfert, int):
+        if len(data)!=0:
             a1, a2, a3 = st.columns(3,gap="small")
             a1.metric(":blue[Montant Total rétiré:]", "{:,.0f} CFA".format(somme_des_retraits))
             a2.metric(":blue[Montant Total déposé:] ", "{:,.0f} CFA".format(somme_des_depots))
@@ -746,11 +750,11 @@ except:
             
         # Ligne A
         
-        if len(data)!=0:
-            a1, a2, a3 = st.columns(3,gap="small")
-            a1.metric(":blue[Montant Total rétiré:]", "{:,.0f} CFA".format(somme_des_retraits))
-            a2.metric(":blue[Montant Total déposé:] ", "{:,.0f} CFA".format(somme_des_depots))
-            a3.metric(":blue[Montant Total transféré:] ", "{:,.0f} CFA".format(somme_Transfert))
+        #if len(data)!=0:
+        a1, a2, a3 = st.columns(3,gap="small")
+        a1.metric(":blue[Montant Total rétiré:]", "{:,.0f} CFA".format(somme_des_retraits))
+        a2.metric(":blue[Montant Total déposé:] ", "{:,.0f} CFA".format(somme_des_depots))
+        a3.metric(":blue[Montant Total transféré:] ", "{:,.0f} CFA".format(somme_Transfert))
 
         # Ligne B
         b1, b2 = st.columns(2)
